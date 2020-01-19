@@ -52,8 +52,24 @@ class App extends React.Component {
     };
   }
 
+  handleLogin() {
+    if (this.state.token !== "") {
+      this.setState({ loggedIn: true });
+    }
+  }
+
   render() {
-    const { token } = this.state;
+    const {
+      token,
+      loggedIn,
+      error,
+      artistName,
+      trackName,
+      albumName,
+      playing,
+      position,
+      duration,
+    } = this.state;
 
     return (
       <div className="App">
@@ -61,20 +77,39 @@ class App extends React.Component {
           <h3>Now Playing</h3>
         </div>
 
-        <p className="App-intro">
-          Enter Spotify access token. Get token 
-          <a href="https://beta.developer.spotify.com/documentation/web-playback-sdk/quick-start/#authenticating-with-spotify">
-            here
-          </a>
-        </p>
+        {error && <p>Error: {error}</p>}
 
-        <p>
-          <input type="text" value={token} onChange={e => this.setState({ token: e.target.value })} />
-        </p>
+        {
+          /**
+           * check if user is logged into Spotify, if yes main screen will display
+           * the current song's info (TODO: add features). if user is not logged in prompt
+           * user to enter access token
+           */
+        }
+        {loggedIn ? 
+        (<div>
+          <p>Artist: {artistName}</p>
+          <p>Track: {trackName}</p>
+          <p>Album: {albumName}</p>
+        </div>) :
+        (<div>
+          <p className="App-intro">
+            Enter Spotify access token. Get token  
+            <a href="https://beta.developer.spotify.com/documentation/web-playback-sdk/quick-start/#authenticating-with-spotify">
+              here
+            </a>
+          </p>
 
-        <p>
-          <button>GO</button>
-        </p>
+          <p>
+            <input type="text" value={token} onChange={e => this.setState({ token: e.target.value })} />
+          </p>
+
+          <p>
+            <button onClick={() => this.handleLogin()}>GO</button>
+          </p>
+        </div>)
+        }
+
       </div>
     );
   }
