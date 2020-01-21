@@ -50,11 +50,36 @@ class App extends React.Component {
       position: 0,
       duration: 0,
     };
+
+    this.playerCheckInterval = null;
   }
 
   handleLogin() {
     if (this.state.token !== "") {
       this.setState({ loggedIn: true });
+
+      // check every second for spotify player
+      this.playerCheckInterval = setInterval(() => this.checkForPlayer(), 1000);
+    }
+  }
+
+  /**
+   * check for the Spotify variable (index.html), if it exists create a Player obj.
+   * method is constantly called until SDK is ready
+   */
+  checkForPlayer() {
+    const { token } = this.state;
+
+    if (window.Spotify !== null) {
+      // once player is created cancel the playerCheckInterval
+      clearInterval(this.playerCheckInterval);
+      
+      this.player = new window.Spotify.Player({
+        name: "K-popped",
+        getOAuthToken: cb => { cb(token); },
+      });
+
+      this.player.connect();
     }
   }
 
