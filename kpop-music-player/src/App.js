@@ -136,6 +136,19 @@ class App extends React.Component {
     }
   }
 
+  //=========================== Player Controls ===============================
+  onPrevClick() {
+    this.player.previousTrack();
+  }
+
+  onPlayClick() {
+    this.player.togglePlay();
+  }
+
+  onNextClick() {
+    this.player.nextTrack();
+  }
+
   render() {
     const {
       token,
@@ -152,7 +165,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <div className="App-header">
-          <h3>Now Playing</h3>
+          <h3>K-popped</h3>
         </div>
 
         {error && <p>Error: {error}</p>}
@@ -169,6 +182,12 @@ class App extends React.Component {
           <p>Artist: {artistName}</p>
           <p>Track: {trackName}</p>
           <p>Album: {albumName}</p>
+
+          <p>
+            <button onClick={() => this.onPrevClick()}>Previous</button>
+            <button onClick={() => this.onPlayClick()}>{playing ? "Pause" : "Play"}</button>
+            <button onClick={() => this.onNextClick()}>Next</button>
+          </p>
         </div>) :
         (<div>
           <p className="App-intro">
