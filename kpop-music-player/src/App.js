@@ -79,7 +79,60 @@ class App extends React.Component {
         getOAuthToken: cb => { cb(token); },
       });
 
+      this.createEventHandlers();
+
       this.player.connect();
+    }
+  }
+
+  // update app when data is received from spotify API
+  createEventHandlers() {
+    this.player.on('initialization_error', e => { console.error(e); });
+    this.player.on('authentication_error', e => {
+      console.error(e);
+      this.setState({ loggedIn: false});
+    });
+    this.player.on('account_error', e => { console.error(e); });
+    this.player.on('playback_error', e => { console.error(e); });
+
+    this.player.on('player_state_changed', state => this.onStateChanged(state));
+
+    this.player.on('ready', data => {
+      let { device_id } = data;
+      console.log("Listen now");
+      this.setState({ deviceId: device_id });
+    });
+  }
+
+  /**
+   * update this.state using Spotify's player state
+   */
+  onStateChanged(state) {
+    if (state !== null) {
+
+      // song info
+      const {
+        current_track: currentTrack,
+        position,
+        duration,
+      } = state.track_window;
+      const trackName = currentTrack.name;
+      const albumName = currentTrack.album.name;
+      // convert artist objects to strings for names
+      const artistName = currentTrack.artists
+        .map(artist => artist.name)
+        .join(", ");
+      const playing = !state.paused;
+
+      // update component's state with data received from player state object
+      this.setState({
+        position,
+        duration,
+        trackName,
+        albumName,
+        artistName,
+        playing,
+      });
     }
   }
 
@@ -119,7 +172,7 @@ class App extends React.Component {
         </div>) :
         (<div>
           <p className="App-intro">
-            Enter Spotify access token. Get token  
+            Enter Spotify access token. Get token {" "}
             <a href="https://beta.developer.spotify.com/documentation/web-playback-sdk/quick-start/#authenticating-with-spotify">
               here
             </a>
